@@ -1,17 +1,16 @@
 // Copyright 2016 Google Inc.
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //      http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
 
 (function() {
   'use strict';
@@ -24,9 +23,8 @@
     cardTemplate: document.querySelector('.cardTemplate'),
     container: document.querySelector('.main'),
     addDialog: document.querySelector('.dialog-container'),
-    daysOfWeek: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    daysOfWeek: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
   };
-
 
   /*****************************************************************************
    *
@@ -60,7 +58,6 @@
     // Close the add new city dialog
     app.toggleAddDialog(false);
   });
-
 
   /*****************************************************************************
    *
@@ -113,16 +110,21 @@
 
     card.querySelector('.description').textContent = current.text;
     card.querySelector('.date').textContent = current.date;
-    card.querySelector('.current .icon').classList.add(app.getIconClass(current.code));
-    card.querySelector('.current .temperature .value').textContent =
-      Math.round(current.temp);
+    card
+      .querySelector('.current .icon')
+      .classList.add(app.getIconClass(current.code));
+    card.querySelector('.current .temperature .value').textContent = Math.round(
+      current.temp,
+    );
     card.querySelector('.current .sunrise').textContent = sunrise;
     card.querySelector('.current .sunset').textContent = sunset;
     card.querySelector('.current .humidity').textContent =
       Math.round(humidity) + '%';
-    card.querySelector('.current .wind .value').textContent =
-      Math.round(wind.speed);
-    card.querySelector('.current .wind .direction').textContent = wind.direction;
+    card.querySelector('.current .wind .value').textContent = Math.round(
+      wind.speed,
+    );
+    card.querySelector('.current .wind .direction').textContent =
+      wind.direction;
     var nextDays = card.querySelectorAll('.future .oneday');
     var today = new Date();
     today = today.getDay();
@@ -132,11 +134,15 @@
       if (daily && nextDay) {
         nextDay.querySelector('.date').textContent =
           app.daysOfWeek[(i + today) % 7];
-        nextDay.querySelector('.icon').classList.add(app.getIconClass(daily.code));
-        nextDay.querySelector('.temp-high .value').textContent =
-          Math.round(daily.high);
-        nextDay.querySelector('.temp-low .value').textContent =
-          Math.round(daily.low);
+        nextDay
+          .querySelector('.icon')
+          .classList.add(app.getIconClass(daily.code));
+        nextDay.querySelector('.temp-high .value').textContent = Math.round(
+          daily.high,
+        );
+        nextDay.querySelector('.temp-low .value').textContent = Math.round(
+          daily.low,
+        );
       }
     }
     if (app.isLoading) {
@@ -145,7 +151,6 @@
       app.isLoading = false;
     }
   };
-
 
   /*****************************************************************************
    *
@@ -163,8 +168,8 @@
    */
   app.getForecast = function(key, label) {
     var statement = 'select * from weather.forecast where woeid=' + key;
-    var url = 'https://query.yahooapis.com/v1/public/yql?format=json&q=' +
-        statement;
+    var url =
+      'https://query.yahooapis.com/v1/public/yql?format=json&q=' + statement;
     // TODO add cache logic here
 
     // Fetch the latest data.
@@ -197,6 +202,10 @@
   };
 
   // TODO add saveSelectedCities function here
+  app.saveSelectedCities = function() {
+    const selectedCities = JSON.stringify(app.selectedCities);
+    localStorage.selectedCities = selectedCities;
+  };
 
   app.getIconClass = function(weatherCode) {
     // Weather codes: https://developer.yahoo.com/weather/documentation.html#codes
@@ -273,39 +282,68 @@
     created: '2016-07-22T01:00:00Z',
     channel: {
       astronomy: {
-        sunrise: "5:43 am",
-        sunset: "8:21 pm"
+        sunrise: '5:43 am',
+        sunset: '8:21 pm',
       },
       item: {
         condition: {
-          text: "Windy",
-          date: "Thu, 21 Jul 2016 09:00 PM EDT",
+          text: 'Windy',
+          date: 'Thu, 21 Jul 2016 09:00 PM EDT',
           temp: 56,
-          code: 24
+          code: 24,
         },
         forecast: [
-          {code: 44, high: 86, low: 70},
-          {code: 44, high: 94, low: 73},
-          {code: 4, high: 95, low: 78},
-          {code: 24, high: 75, low: 89},
-          {code: 24, high: 89, low: 77},
-          {code: 44, high: 92, low: 79},
-          {code: 44, high: 89, low: 77}
-        ]
+          { code: 44, high: 86, low: 70 },
+          { code: 44, high: 94, low: 73 },
+          { code: 4, high: 95, low: 78 },
+          { code: 24, high: 75, low: 89 },
+          { code: 24, high: 89, low: 77 },
+          { code: 44, high: 92, low: 79 },
+          { code: 44, high: 89, low: 77 },
+        ],
       },
       atmosphere: {
-        humidity: 56
+        humidity: 56,
       },
       wind: {
         speed: 25,
-        direction: 195
-      }
-    }
+        direction: 195,
+      },
+    },
   };
   // TODO uncomment line below to test app with fake data
   //app.updateForecastCard(initialWeatherForecast);
 
   // TODO add startup code here
+  /************************************************************************
+   *
+   * Code required to start the app
+   *
+   * NOTE: To simplify this codelab, we've used localStorage.
+   *   localStorage is a synchronous API and has serious performance
+   *   implications. It should not be used in production applications!
+   *   Instead, check out IDB (https://www.npmjs.com/package/idb) or
+   *   SimpleDB (https://gist.github.com/inexorabletash/c8069c042b734519680c)
+   ************************************************************************/
+
+  app.selectedCities = localStorage.selectedCities;
+  if (app.selectedCities) {
+    app.selectedCities = JSON.parse(app.selectedCities);
+    app.selectedCities.forEach(function(city) {
+      app.getForecast(city.key, city.label);
+    });
+  } else {
+    /* The user is using the app for the first time, or the user has not
+     * saved any cities, so show the user some fake data. A real app in this
+     * scenario could guess the user's location via IP lookup and then inject
+     * that data into the page.
+     */
+    app.updateForecastCard(initialWeatherForecast);
+    app.selectedCities = [
+      { key: initialWeatherForecast.key, label: initialWeatherForecast.label },
+    ];
+    app.saveSelectedCities();
+  }
 
   // TODO add service worker code here
 })();
